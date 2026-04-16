@@ -85,6 +85,36 @@ public class User {
         );
     }
 
+    public static User reconstitute(String id,
+                                    String username,
+                                    String nickname,
+                                    String phone,
+                                    String email,
+                                    String passwordHash,
+                                    String passwordSalt,
+                                    int accessFailedCount,
+                                    LocalDateTime lockoutEnd,
+                                    LocalDateTime createdAt,
+                                    LocalDateTime passwordChangedTime,
+                                    boolean active,
+                                    Set<Role> roles) {
+        return new User(
+                new UserId(id),
+                username,
+                nickname == null || nickname.isBlank() ? username : nickname,
+                new Email(email),
+                passwordHash == null ? "" : passwordHash,
+                passwordSalt == null ? "" : passwordSalt,
+                phone == null ? "" : phone,
+                accessFailedCount,
+                lockoutEnd,
+                createdAt,
+                passwordChangedTime,
+                active,
+                new HashSet<>(roles == null ? Set.of() : roles)
+        );
+    }
+
     public void assignRole(Role role) {
         if (role != null) {
             roles.add(role);

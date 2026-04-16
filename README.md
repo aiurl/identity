@@ -84,6 +84,25 @@ src/main/java/com/linkyou/identity
 
 对应初始化脚本位于 [src/main/resources/schema.sql](src/main/resources/schema.sql)。
 
+## Repository 实现切换
+
+当前 Repository 已支持以下两类实现，并可通过配置自动切换：
+
+- inmemory：默认内存实现，适合本地开发和快速验证
+- jdbc：统一 JDBC 持久化实现，同时适配 MySQL 与 PostgreSQL
+
+可在 [src/main/resources/application.yml](src/main/resources/application.yml) 中修改：
+
+```yaml
+identity:
+  repository:
+    type: jdbc
+```
+
+然后通过数据源配置决定实际连接的是 MySQL 还是 PostgreSQL。
+
+> 兼容说明：如果仍配置为 `mysql` 或 `postgresql`，也会自动落到统一的 JDBC Repository 实现。
+
 ## 当前已实现的示例能力
 
 当前项目已经补充了基础的身份认证示例：
@@ -93,6 +112,7 @@ src/main/java/com/linkyou/identity
 - 基于角色的访问控制（RBAC）
 - 用户接口鉴权访问
 - 角色与权限接口的管理员限制访问
+- 持久化层审计字段自动填充（created_at / updated_at）
 
 ### 示例接口
 

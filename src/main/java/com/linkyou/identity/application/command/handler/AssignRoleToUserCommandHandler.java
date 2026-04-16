@@ -1,5 +1,7 @@
 package com.linkyou.identity.application.command.handler;
 
+import an.awesome.pipelinr.Command;
+import com.linkyou.identity.application.command.dto.AssignRoleToUserCommand;
 import com.linkyou.identity.application.query.dto.UserView;
 import com.linkyou.identity.common.exception.DomainException;
 import com.linkyou.identity.domain.model.aggregate.User;
@@ -8,10 +10,10 @@ import com.linkyou.identity.domain.model.valueobject.RoleId;
 import com.linkyou.identity.domain.model.valueobject.UserId;
 import com.linkyou.identity.domain.repository.RoleRepository;
 import com.linkyou.identity.domain.repository.UserRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class AssignRoleToUserCommandHandler {
+@Component
+public class AssignRoleToUserCommandHandler implements Command.Handler<AssignRoleToUserCommand, UserView> {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -21,27 +23,28 @@ public class AssignRoleToUserCommandHandler {
         this.roleRepository = roleRepository;
     }
 
-    public UserView handle(String userId, String roleId) {
-        User user = userRepository.findById(new UserId(userId))
+    @Override
+    public UserView handle(AssignRoleToUserCommand command) {
+        User user = userRepository.findById(new UserId(command.userId()))
                 .orElseThrow(() -> new DomainException("User not found"));
-        Role role = roleRepository.findById(new RoleId(roleId))
+        Role role = roleRepository.findById(new RoleId(command.roleId()))
                 .orElseThrow(() -> new DomainException("Role not found"));
 
         user.assignRole(role);
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         return new UserView(
-                user.getId().value(),
-                user.getUsername(),
-                user.getNickname(),
-                user.getPhone(),
-                user.getEmail().value(),
-                user.getAccessFailedCount(),
-                user.getLockoutEnd(),
-                user.getCreatedAt(),
-                user.getPasswordChangedTime(),
-                user.isActive(),
-                user.getRoles().stream().map(Role::getName).toList()
+                savedUser.getId().value(),
+                savedUser.getUsername(),
+                savedUser.getNickname(),
+                savedUser.getPhone(),
+                savedUser.getEmail().value(),
+                savedUser.getAccessFailedCount(),
+                savedUser.getLockoutEnd(),
+                savedUser.getCreatedAt(),
+                savedUser.getPasswordChangedTime(),
+                savedUser.isActive(),
+                savedUser.getRoles().stream().map(Role::getName).toList()
         );
     }
 }

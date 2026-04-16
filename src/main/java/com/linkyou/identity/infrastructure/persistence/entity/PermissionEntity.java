@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "sys_permissions")
-public class PermissionEntity {
+public class PermissionEntity extends AuditableEntity {
 
     @Id
     private String id;

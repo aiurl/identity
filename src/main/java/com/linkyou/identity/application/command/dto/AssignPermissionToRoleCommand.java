@@ -4,8 +4,8 @@ import an.awesome.pipelinr.Command;
 import com.linkyou.identity.application.query.dto.RoleView;
 import jakarta.validation.constraints.NotBlank;
 
-public record CreateRoleCommand(
-        @NotBlank(message = "role name不能为空") String name,
-        String description
+public record AssignPermissionToRoleCommand(
+        @NotBlank(message = "roleId不能为空") String roleId,
+        @NotBlank(message = "permissionId不能为空") String permissionId
 ) implements Command<RoleView> {
 }

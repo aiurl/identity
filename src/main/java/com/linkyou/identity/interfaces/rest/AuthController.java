@@ -1,10 +1,10 @@
 package com.linkyou.identity.interfaces.rest;
 
+import an.awesome.pipelinr.Pipeline;
 import com.linkyou.identity.application.command.dto.LoginCommand;
 import com.linkyou.identity.application.command.dto.RegisterUserCommand;
 import com.linkyou.identity.application.query.dto.AuthTokenView;
 import com.linkyou.identity.application.query.dto.UserView;
-import com.linkyou.identity.application.service.AuthApplicationService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,19 +15,19 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthApplicationService authApplicationService;
+    private final Pipeline pipeline;
 
-    public AuthController(AuthApplicationService authApplicationService) {
-        this.authApplicationService = authApplicationService;
+    public AuthController(Pipeline pipeline) {
+        this.pipeline = pipeline;
     }
 
     @PostMapping("/register")
     public Mono<UserView> register(@RequestBody RegisterUserCommand command) {
-        return Mono.fromSupplier(() -> authApplicationService.register(command));
+        return Mono.fromSupplier(() -> pipeline.send(command));
     }
 
     @PostMapping("/login")
     public Mono<AuthTokenView> login(@RequestBody LoginCommand command) {
-        return Mono.fromSupplier(() -> authApplicationService.login(command));
+        return Mono.fromSupplier(() -> pipeline.send(command));
     }
 }

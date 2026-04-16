@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "sys_roles")
-public class RoleEntity {
+public class RoleEntity extends AuditableEntity {
 
     @Id
     private String id;

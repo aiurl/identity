@@ -1,10 +1,11 @@
 package com.linkyou.identity.interfaces.rest;
 
+import an.awesome.pipelinr.Pipeline;
+import com.linkyou.identity.application.command.dto.AssignRoleToUserCommand;
 import com.linkyou.identity.application.command.dto.CreateUserCommand;
-import com.linkyou.identity.application.command.handler.AssignRoleToUserCommandHandler;
-import com.linkyou.identity.application.command.handler.CreateUserCommandHandler;
+import com.linkyou.identity.application.query.dto.GetUserByIdQuery;
+import com.linkyou.identity.application.query.dto.ListUsersQuery;
 import com.linkyou.identity.application.query.dto.UserView;
-import com.linkyou.identity.application.query.handler.GetUserQueryHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,37 +21,31 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final CreateUserCommandHandler createUserCommandHandler;
-    private final AssignRoleToUserCommandHandler assignRoleToUserCommandHandler;
-    private final GetUserQueryHandler getUserQueryHandler;
+    private final Pipeline pipeline;
 
-    public UserController(CreateUserCommandHandler createUserCommandHandler,
-                          AssignRoleToUserCommandHandler assignRoleToUserCommandHandler,
-                          GetUserQueryHandler getUserQueryHandler) {
-        this.createUserCommandHandler = createUserCommandHandler;
-        this.assignRoleToUserCommandHandler = assignRoleToUserCommandHandler;
-        this.getUserQueryHandler = getUserQueryHandler;
+    public UserController(Pipeline pipeline) {
+        this.pipeline = pipeline;
     }
 
     @PostMapping
     public Mono<UserView> create(@RequestBody CreateUserCommand command) {
-        return Mono.fromSupplier(() -> createUserCommandHandler.handle(command));
+        return Mono.fromSupplier(() -> pipeline.send(command));
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<UserView>> getById(@PathVariable String id) {
-        return Mono.justOrEmpty(getUserQueryHandler.findById(id))
+        return Mono.justOrEmpty(pipeline.send(new GetUserByIdQuery(id)))
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping
     public Mono<List<UserView>> list() {
-        return Mono.fromSupplier(getUserQueryHandler::findAll);
+        return Mono.fromSupplier(() -> pipeline.send(new ListUsersQuery()));
     }
 
     @PostMapping("/{userId}/roles/{roleId}")
     public Mono<UserView> assignRole(@PathVariable String userId, @PathVariable String roleId) {
-        return Mono.fromSupplier(() -> assignRoleToUserCommandHandler.handle(userId, roleId));
+        return Mono.fromSupplier(() -> pipeline.send(new AssignRoleToUserCommand(userId, roleId)));
     }
 }

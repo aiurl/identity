@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "sys_users")
-public class UserEntity {
+public class UserEntity extends AuditableEntity {
 
     @Id
     private String id;
@@ -44,9 +45,6 @@ public class UserEntity {
     @Column(name = "lockout_end")
     private LocalDateTime lockoutEnd;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
     @Column(name = "password_changed_time", nullable = false)
     private LocalDateTime passwordChangedTime;
 
@@ -62,5 +60,15 @@ public class UserEntity {
     private Set<RoleEntity> roles = new HashSet<>();
 
     protected UserEntity() {
+    }
+
+    @PrePersist
+    protected void initializeUserAuditFields() {
+        if (nickname == null || nickname.isBlank()) {
+            nickname = username;
+        }
+        if (passwordChangedTime == null) {
+            passwordChangedTime = LocalDateTime.now();
+        }
     }
 }

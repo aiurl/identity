@@ -1,10 +1,11 @@
 package com.linkyou.identity.interfaces.rest;
 
+import an.awesome.pipelinr.Pipeline;
+import com.linkyou.identity.application.command.dto.AssignPermissionToRoleCommand;
 import com.linkyou.identity.application.command.dto.CreateRoleCommand;
-import com.linkyou.identity.application.command.handler.AssignPermissionToRoleCommandHandler;
-import com.linkyou.identity.application.command.handler.CreateRoleCommandHandler;
+import com.linkyou.identity.application.query.dto.GetRoleByIdQuery;
+import com.linkyou.identity.application.query.dto.ListRolesQuery;
 import com.linkyou.identity.application.query.dto.RoleView;
-import com.linkyou.identity.application.query.handler.GetRoleQueryHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,37 +21,31 @@ import java.util.List;
 @RequestMapping("/api/roles")
 public class RoleController {
 
-    private final CreateRoleCommandHandler createRoleCommandHandler;
-    private final AssignPermissionToRoleCommandHandler assignPermissionToRoleCommandHandler;
-    private final GetRoleQueryHandler getRoleQueryHandler;
+    private final Pipeline pipeline;
 
-    public RoleController(CreateRoleCommandHandler createRoleCommandHandler,
-                          AssignPermissionToRoleCommandHandler assignPermissionToRoleCommandHandler,
-                          GetRoleQueryHandler getRoleQueryHandler) {
-        this.createRoleCommandHandler = createRoleCommandHandler;
-        this.assignPermissionToRoleCommandHandler = assignPermissionToRoleCommandHandler;
-        this.getRoleQueryHandler = getRoleQueryHandler;
+    public RoleController(Pipeline pipeline) {
+        this.pipeline = pipeline;
     }
 
     @PostMapping
     public Mono<RoleView> create(@RequestBody CreateRoleCommand command) {
-        return Mono.fromSupplier(() -> createRoleCommandHandler.handle(command));
+        return Mono.fromSupplier(() -> pipeline.send(command));
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<RoleView>> getById(@PathVariable String id) {
-        return Mono.justOrEmpty(getRoleQueryHandler.findById(id))
+        return Mono.justOrEmpty(pipeline.send(new GetRoleByIdQuery(id)))
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping
     public Mono<List<RoleView>> list() {
-        return Mono.fromSupplier(getRoleQueryHandler::findAll);
+        return Mono.fromSupplier(() -> pipeline.send(new ListRolesQuery()));
     }
 
     @PostMapping("/{roleId}/permissions/{permissionId}")
     public Mono<RoleView> assignPermission(@PathVariable String roleId, @PathVariable String permissionId) {
-        return Mono.fromSupplier(() -> assignPermissionToRoleCommandHandler.handle(roleId, permissionId));
+        return Mono.fromSupplier(() -> pipeline.send(new AssignPermissionToRoleCommand(roleId, permissionId)));
     }
 }

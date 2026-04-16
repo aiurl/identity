@@ -22,6 +22,10 @@ public class Permission {
         return new Permission(PermissionId.newId(), code.trim().toUpperCase(), description == null ? "" : description.trim());
     }
 
+    public static Permission reconstitute(String id, String code, String description) {
+        return new Permission(new PermissionId(id), code.trim().toUpperCase(), description == null ? "" : description.trim());
+    }
+
     public PermissionId getId() {
         return id;
     }

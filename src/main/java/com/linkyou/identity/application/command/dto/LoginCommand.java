@@ -1,4 +1,11 @@
 package com.linkyou.identity.application.command.dto;
 
-public record LoginCommand(String username, String password) {
+import an.awesome.pipelinr.Command;
+import com.linkyou.identity.application.query.dto.AuthTokenView;
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginCommand(
+        @NotBlank(message = "username不能为空") String username,
+        @NotBlank(message = "password不能为空") String password
+) implements Command<AuthTokenView> {
 }

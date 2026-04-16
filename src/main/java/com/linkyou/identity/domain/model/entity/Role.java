@@ -28,6 +28,10 @@ public class Role {
         return new Role(RoleId.newId(), name.trim(), description == null ? "" : description.trim(), new HashSet<>());
     }
 
+    public static Role reconstitute(String id, String name, String description, Set<Permission> permissions) {
+        return new Role(new RoleId(id), name, description == null ? "" : description, new HashSet<>(permissions == null ? Set.of() : permissions));
+    }
+
     public void assignPermission(Permission permission) {
         if (permission != null) {
             permissions.add(permission);

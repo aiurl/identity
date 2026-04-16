@@ -1,16 +1,18 @@
 package com.linkyou.identity.application.query.handler;
 
+import an.awesome.pipelinr.Command;
+import com.linkyou.identity.application.query.dto.ListRolesQuery;
 import com.linkyou.identity.application.query.dto.RoleView;
 import com.linkyou.identity.domain.model.entity.Role;
 import com.linkyou.identity.domain.model.valueobject.RoleId;
 import com.linkyou.identity.domain.repository.RoleRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class GetRoleQueryHandler {
+@Component
+public class GetRoleQueryHandler implements Command.Handler<ListRolesQuery, List<RoleView>> {
 
     private final RoleRepository roleRepository;
 
@@ -22,8 +24,13 @@ public class GetRoleQueryHandler {
         return roleRepository.findById(new RoleId(id)).map(this::toView);
     }
 
-    public List<RoleView> findAll() {
+    @Override
+    public List<RoleView> handle(ListRolesQuery query) {
         return roleRepository.findAll().stream().map(this::toView).toList();
+    }
+
+    public List<RoleView> findAll() {
+        return handle(new ListRolesQuery());
     }
 
     private RoleView toView(Role role) {

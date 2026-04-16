@@ -45,19 +45,19 @@ public class AuthApplicationService {
             user.assignRole(Role.create("ADMIN", "System administrator role"));
         }
 
-        userRepository.save(user);
-        List<String> roles = user.getRoles().stream().map(Role::getName).toList();
+        User savedUser = userRepository.save(user);
+        List<String> roles = savedUser.getRoles().stream().map(Role::getName).toList();
         return new UserView(
-                user.getId().value(),
-                user.getUsername(),
-                user.getNickname(),
-                user.getPhone(),
-                user.getEmail().value(),
-                user.getAccessFailedCount(),
-                user.getLockoutEnd(),
-                user.getCreatedAt(),
-                user.getPasswordChangedTime(),
-                user.isActive(),
+                savedUser.getId().value(),
+                savedUser.getUsername(),
+                savedUser.getNickname(),
+                savedUser.getPhone(),
+                savedUser.getEmail().value(),
+                savedUser.getAccessFailedCount(),
+                savedUser.getLockoutEnd(),
+                savedUser.getCreatedAt(),
+                savedUser.getPasswordChangedTime(),
+                savedUser.isActive(),
                 roles
         );
     }

@@ -3,6 +3,7 @@ package com.linkyou.identity.infrastructure.persistence.repository;
 import com.linkyou.identity.domain.model.aggregate.User;
 import com.linkyou.identity.domain.model.valueobject.UserId;
 import com.linkyou.identity.domain.repository.UserRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @Repository
+@ConditionalOnProperty(prefix = "identity.repository", name = "type", havingValue = "inmemory", matchIfMissing = true)
 public class InMemoryUserRepository implements UserRepository {
 
     private final ConcurrentMap<String, User> storage = new ConcurrentHashMap<>();

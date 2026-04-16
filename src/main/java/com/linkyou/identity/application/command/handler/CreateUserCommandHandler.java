@@ -1,16 +1,17 @@
 package com.linkyou.identity.application.command.handler;
 
+import an.awesome.pipelinr.Command;
 import com.linkyou.identity.application.command.dto.CreateUserCommand;
 import com.linkyou.identity.application.query.dto.UserView;
 import com.linkyou.identity.common.exception.DomainException;
 import com.linkyou.identity.domain.model.aggregate.User;
 import com.linkyou.identity.domain.repository.UserRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
-public class CreateUserCommandHandler {
+@Component
+public class CreateUserCommandHandler implements Command.Handler<CreateUserCommand, UserView> {
 
     private final UserRepository userRepository;
 
@@ -18,6 +19,7 @@ public class CreateUserCommandHandler {
         this.userRepository = userRepository;
     }
 
+    @Override
     public UserView handle(CreateUserCommand command) {
         userRepository.findByUsername(command.username())
                 .ifPresent(existingUser -> {

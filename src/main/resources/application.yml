@@ -13,6 +13,10 @@ spring:
         init:
             mode: always
 
+identity:
+    repository:
+        type: inmemory   # 可选: inmemory / jdbc（mysql、postgresql 也兼容映射到统一 JDBC 实现）
+
 security:
     jwt:
         secret: this-is-a-demo-jwt-secret-key-for-linkyou-identity-service-2026
