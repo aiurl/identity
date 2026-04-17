@@ -113,6 +113,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
@@ -139,6 +144,11 @@
 			<artifactId>pipelinr</artifactId>
 			<version>0.11</version>
 		</dependency>
+		<dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.82</version>
+        </dependency>
 	</dependencies>
 
 	<build>
