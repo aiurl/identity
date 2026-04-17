@@ -1,3 +1,11 @@
 spring:
   application:
     name: linkyou
+
+server:
+  port: 5080
+
+logging:
+  level:
+    root: INFO
+    '[com.nerosoft]': DEBUG
