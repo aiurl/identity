@@ -5,6 +5,20 @@ spring:
 server:
   port: 5080
 
+security:
+  jwt:
+    secret: linkyou-super-secret-jwt-signing-key-2026
+    access-token-expiration: 900000
+    refresh-token-expiration: 604800000
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger
+    operations-sorter: alpha
+    tags-sorter: alpha
+
 logging:
   level:
     root: INFO
