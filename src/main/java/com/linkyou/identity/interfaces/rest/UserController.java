@@ -1,11 +1,9 @@
 package com.linkyou.identity.interfaces.rest;
 
-import an.awesome.pipelinr.Pipeline;
-import com.linkyou.identity.application.command.dto.AssignRoleToUserCommand;
-import com.linkyou.identity.application.command.dto.CreateUserCommand;
-import com.linkyou.identity.application.query.dto.GetUserByIdQuery;
-import com.linkyou.identity.application.query.dto.ListUsersQuery;
-import com.linkyou.identity.application.query.dto.UserView;
+import com.linkyou.identity.application.query.dto.UserDto;
+import com.linkyou.identity.application.service.IdentityApplicationService;
+import com.linkyou.identity.interfaces.rest.dto.CreateUserRequestDto;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,39 +11,43 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final Pipeline pipeline;
+    private final IdentityApplicationService identityApplicationService;
 
-    public UserController(Pipeline pipeline) {
-        this.pipeline = pipeline;
+    public UserController(IdentityApplicationService identityApplicationService) {
+        this.identityApplicationService = identityApplicationService;
     }
 
     @PostMapping
-    public Mono<UserView> create(@RequestBody CreateUserCommand command) {
-        return Mono.fromSupplier(() -> pipeline.send(command));
+    public Mono<UserDto> create(@Valid @RequestBody CreateUserRequestDto request) {
+        return identityApplicationService.createUserAsync(
+                request.username(),
+                request.nickname(),
+                request.phone(),
+                request.email()
+        );
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<UserView>> getById(@PathVariable String id) {
-        return Mono.justOrEmpty(pipeline.send(new GetUserByIdQuery(id)))
+    public Mono<ResponseEntity<UserDto>> getById(@PathVariable String id) {
+        return identityApplicationService.getUserByIdAsync(id)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public Mono<List<UserView>> list() {
-        return Mono.fromSupplier(() -> pipeline.send(new ListUsersQuery()));
+    public Flux<UserDto> list() {
+        return identityApplicationService.listUsersAsync();
     }
 
     @PostMapping("/{userId}/roles/{roleId}")
-    public Mono<UserView> assignRole(@PathVariable String userId, @PathVariable String roleId) {
-        return Mono.fromSupplier(() -> pipeline.send(new AssignRoleToUserCommand(userId, roleId)));
+    public Mono<UserDto> assignRole(@PathVariable String userId, @PathVariable String roleId) {
+        return identityApplicationService.assignRoleToUserAsync(userId, roleId);
     }
 }

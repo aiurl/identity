@@ -1,14 +1,14 @@
 package com.linkyou.identity.application.query.handler;
 
 import an.awesome.pipelinr.Command;
-import com.linkyou.identity.application.query.dto.GetUserByIdQuery;
-import com.linkyou.identity.application.query.dto.UserView;
+import com.linkyou.identity.application.query.GetUserByIdQuery;
+import com.linkyou.identity.application.query.dto.UserDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
-public class GetUserByIdQueryHandler implements Command.Handler<GetUserByIdQuery, Optional<UserView>> {
+public class GetUserByIdQueryHandler implements Command.Handler<GetUserByIdQuery, Optional<UserDto>> {
 
     private final GetUserQueryHandler getUserQueryHandler;
 
@@ -17,7 +17,7 @@ public class GetUserByIdQueryHandler implements Command.Handler<GetUserByIdQuery
     }
 
     @Override
-    public Optional<UserView> handle(GetUserByIdQuery query) {
+    public Optional<UserDto> handle(GetUserByIdQuery query) {
         return getUserQueryHandler.findById(query.id());
     }
 }

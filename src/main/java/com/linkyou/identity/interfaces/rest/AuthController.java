@@ -1,10 +1,11 @@
 package com.linkyou.identity.interfaces.rest;
 
-import an.awesome.pipelinr.Pipeline;
-import com.linkyou.identity.application.command.dto.LoginCommand;
-import com.linkyou.identity.application.command.dto.RegisterUserCommand;
-import com.linkyou.identity.application.query.dto.AuthTokenView;
-import com.linkyou.identity.application.query.dto.UserView;
+import com.linkyou.identity.application.query.dto.AuthTokenDto;
+import com.linkyou.identity.application.query.dto.UserDto;
+import com.linkyou.identity.application.service.AuthApplicationService;
+import com.linkyou.identity.interfaces.rest.dto.LoginRequestDto;
+import com.linkyou.identity.interfaces.rest.dto.RegisterUserRequestDto;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,19 +16,25 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final Pipeline pipeline;
+    private final AuthApplicationService authApplicationService;
 
-    public AuthController(Pipeline pipeline) {
-        this.pipeline = pipeline;
+    public AuthController(AuthApplicationService authApplicationService) {
+        this.authApplicationService = authApplicationService;
     }
 
     @PostMapping("/register")
-    public Mono<UserView> register(@RequestBody RegisterUserCommand command) {
-        return Mono.fromSupplier(() -> pipeline.send(command));
+    public Mono<UserDto> register(@Valid @RequestBody RegisterUserRequestDto request) {
+        return authApplicationService.registerAsync(
+                request.username(),
+                request.nickname(),
+                request.phone(),
+                request.email(),
+                request.password()
+        );
     }
 
     @PostMapping("/login")
-    public Mono<AuthTokenView> login(@RequestBody LoginCommand command) {
-        return Mono.fromSupplier(() -> pipeline.send(command));
+    public Mono<AuthTokenDto> login(@Valid @RequestBody LoginRequestDto request) {
+        return authApplicationService.loginAsync(request.username(), request.password());
     }
 }

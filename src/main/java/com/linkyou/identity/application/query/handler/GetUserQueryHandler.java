@@ -1,8 +1,8 @@
 package com.linkyou.identity.application.query.handler;
 
 import an.awesome.pipelinr.Command;
-import com.linkyou.identity.application.query.dto.ListUsersQuery;
-import com.linkyou.identity.application.query.dto.UserView;
+import com.linkyou.identity.application.query.ListUsersQuery;
+import com.linkyou.identity.application.query.dto.UserDto;
 import com.linkyou.identity.domain.model.aggregate.User;
 import com.linkyou.identity.domain.repository.UserRepository;
 import com.linkyou.identity.domain.model.valueobject.UserId;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class GetUserQueryHandler implements Command.Handler<ListUsersQuery, List<UserView>> {
+public class GetUserQueryHandler implements Command.Handler<ListUsersQuery, List<UserDto>> {
 
     private final UserRepository userRepository;
 
@@ -20,21 +20,21 @@ public class GetUserQueryHandler implements Command.Handler<ListUsersQuery, List
         this.userRepository = userRepository;
     }
 
-    public Optional<UserView> findById(String id) {
+    public Optional<UserDto> findById(String id) {
         return userRepository.findById(new UserId(id)).map(this::toView);
     }
 
     @Override
-    public List<UserView> handle(ListUsersQuery query) {
+    public List<UserDto> handle(ListUsersQuery query) {
         return userRepository.findAll().stream().map(this::toView).toList();
     }
 
-    public List<UserView> findAll() {
+    public List<UserDto> findAll() {
         return handle(new ListUsersQuery());
     }
 
-    private UserView toView(User user) {
-        return new UserView(
+    private UserDto toView(User user) {
+        return new UserDto(
                 user.getId().value(),
                 user.getUsername(),
                 user.getNickname(),

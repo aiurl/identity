@@ -3,7 +3,7 @@ package com.linkyou.identity.application.query.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record UserView(
+public record UserDto(
         String id,
         String username,
         String nickname,

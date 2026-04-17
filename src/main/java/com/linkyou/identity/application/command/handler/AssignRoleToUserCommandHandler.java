@@ -1,8 +1,8 @@
 package com.linkyou.identity.application.command.handler;
 
 import an.awesome.pipelinr.Command;
-import com.linkyou.identity.application.command.dto.AssignRoleToUserCommand;
-import com.linkyou.identity.application.query.dto.UserView;
+import com.linkyou.identity.application.command.AssignRoleToUserCommand;
+import com.linkyou.identity.application.query.dto.UserDto;
 import com.linkyou.identity.common.exception.DomainException;
 import com.linkyou.identity.domain.model.aggregate.User;
 import com.linkyou.identity.domain.model.entity.Role;
@@ -13,7 +13,7 @@ import com.linkyou.identity.domain.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AssignRoleToUserCommandHandler implements Command.Handler<AssignRoleToUserCommand, UserView> {
+public class AssignRoleToUserCommandHandler implements Command.Handler<AssignRoleToUserCommand, UserDto> {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -24,7 +24,7 @@ public class AssignRoleToUserCommandHandler implements Command.Handler<AssignRol
     }
 
     @Override
-    public UserView handle(AssignRoleToUserCommand command) {
+    public UserDto handle(AssignRoleToUserCommand command) {
         User user = userRepository.findById(new UserId(command.userId()))
                 .orElseThrow(() -> new DomainException("User not found"));
         Role role = roleRepository.findById(new RoleId(command.roleId()))
@@ -33,7 +33,7 @@ public class AssignRoleToUserCommandHandler implements Command.Handler<AssignRol
         user.assignRole(role);
         User savedUser = userRepository.save(user);
 
-        return new UserView(
+        return new UserDto(
                 savedUser.getId().value(),
                 savedUser.getUsername(),
                 savedUser.getNickname(),

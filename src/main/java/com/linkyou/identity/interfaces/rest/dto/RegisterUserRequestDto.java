@@ -1,13 +1,11 @@
-package com.linkyou.identity.application.command.dto;
+package com.linkyou.identity.interfaces.rest.dto;
 
-import an.awesome.pipelinr.Command;
-import com.linkyou.identity.application.query.dto.UserView;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record RegisterUserCommand(
+public record RegisterUserRequestDto(
         @NotBlank(message = "username不能为空") String username,
         String nickname,
         @Pattern(regexp = "^$|^\\+?[0-9]{6,20}$", message = "phone格式不正确") String phone,
@@ -15,5 +13,5 @@ public record RegisterUserCommand(
         @Email(message = "email格式不正确") String email,
         @NotBlank(message = "password不能为空")
         @Size(min = 6, message = "password长度不能少于6位") String password
-) implements Command<UserView> {
+) {
 }

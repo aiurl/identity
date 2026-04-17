@@ -1,8 +1,8 @@
 package com.linkyou.identity.application.command.handler;
 
 import an.awesome.pipelinr.Command;
-import com.linkyou.identity.application.command.dto.AssignPermissionToRoleCommand;
-import com.linkyou.identity.application.query.dto.RoleView;
+import com.linkyou.identity.application.command.AssignPermissionToRoleCommand;
+import com.linkyou.identity.application.query.dto.RoleDto;
 import com.linkyou.identity.common.exception.DomainException;
 import com.linkyou.identity.domain.model.entity.Permission;
 import com.linkyou.identity.domain.model.entity.Role;
@@ -13,7 +13,7 @@ import com.linkyou.identity.domain.repository.RoleRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AssignPermissionToRoleCommandHandler implements Command.Handler<AssignPermissionToRoleCommand, RoleView> {
+public class AssignPermissionToRoleCommandHandler implements Command.Handler<AssignPermissionToRoleCommand, RoleDto> {
 
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
@@ -24,7 +24,7 @@ public class AssignPermissionToRoleCommandHandler implements Command.Handler<Ass
     }
 
     @Override
-    public RoleView handle(AssignPermissionToRoleCommand command) {
+    public RoleDto handle(AssignPermissionToRoleCommand command) {
         Role role = roleRepository.findById(new RoleId(command.roleId()))
                 .orElseThrow(() -> new DomainException("Role not found"));
         Permission permission = permissionRepository.findById(new PermissionId(command.permissionId()))
@@ -33,7 +33,7 @@ public class AssignPermissionToRoleCommandHandler implements Command.Handler<Ass
         role.assignPermission(permission);
         Role savedRole = roleRepository.save(role);
 
-        return new RoleView(
+        return new RoleDto(
                 savedRole.getId().value(),
                 savedRole.getName(),
                 savedRole.getDescription(),

@@ -1,112 +1,23 @@
 package com.linkyou.identity.application.service;
 
-import com.linkyou.identity.application.command.dto.LoginCommand;
-import com.linkyou.identity.application.command.dto.RegisterUserCommand;
-import com.linkyou.identity.application.query.dto.AuthTokenView;
-import com.linkyou.identity.application.query.dto.UserView;
-import com.linkyou.identity.common.exception.DomainException;
-import com.linkyou.identity.domain.model.aggregate.User;
-import com.linkyou.identity.domain.model.entity.Role;
-import com.linkyou.identity.domain.repository.UserRepository;
-import com.linkyou.identity.infrastructure.security.JwtService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import com.linkyou.identity.application.query.dto.AuthTokenDto;
+import com.linkyou.identity.application.query.dto.UserDto;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
-import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.List;
+public interface AuthApplicationService {
 
-@Service
-public class AuthApplicationService {
+    UserDto register(String username, String nickname, String phone, String email, String password);
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    AuthTokenDto login(String username, String password);
 
-    public AuthApplicationService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
+    default Mono<UserDto> registerAsync(String username, String nickname, String phone, String email, String password) {
+        return Mono.fromCallable(() -> register(username, nickname, phone, email, password))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
-    public UserView register(RegisterUserCommand command) {
-        validateUniqueUserFields(command.username(), command.phone(), command.email());
-
-        if (command.password() == null || command.password().isBlank()) {
-            throw new DomainException("Password cannot be blank");
-        }
-
-        String passwordSalt = generateSalt();
-        String passwordHash = passwordEncoder.encode(command.password() + passwordSalt);
-        User user = User.register(command.username(), command.nickname(), command.phone(), command.email(), passwordHash, passwordSalt);
-        user.assignRole(Role.create("USER", "Default user role"));
-
-        if ("admin".equalsIgnoreCase(command.username())) {
-            user.assignRole(Role.create("ADMIN", "System administrator role"));
-        }
-
-        User savedUser = userRepository.save(user);
-        List<String> roles = savedUser.getRoles().stream().map(Role::getName).toList();
-        return new UserView(
-                savedUser.getId().value(),
-                savedUser.getUsername(),
-                savedUser.getNickname(),
-                savedUser.getPhone(),
-                savedUser.getEmail().value(),
-                savedUser.getAccessFailedCount(),
-                savedUser.getLockoutEnd(),
-                savedUser.getCreatedAt(),
-                savedUser.getPasswordChangedTime(),
-                savedUser.isActive(),
-                roles
-        );
-    }
-
-    public AuthTokenView login(LoginCommand command) {
-        User user = userRepository.findByUsername(command.username())
-                .orElseThrow(() -> new DomainException("Invalid username or password"));
-
-        if (user.isLocked()) {
-            throw new DomainException("Account is temporarily locked");
-        }
-
-        if (!passwordEncoder.matches(command.password() + user.getPasswordSalt(), user.getPasswordHash())) {
-            user.markAccessFailed();
-            userRepository.save(user);
-            throw new DomainException("Invalid username or password");
-        }
-
-        user.resetAccessFailures();
-        userRepository.save(user);
-
-        List<String> roles = user.getRoles().stream()
-                .map(Role::getName)
-                .map(String::toUpperCase)
-                .toList();
-
-        return new AuthTokenView(jwtService.generateToken(user.getUsername(), roles));
-    }
-
-    private void validateUniqueUserFields(String username, String phone, String email) {
-        userRepository.findByUsername(username)
-                .ifPresent(existingUser -> {
-                    throw new DomainException("Username already exists");
-                });
-
-        userRepository.findByPhone(phone)
-                .ifPresent(existingUser -> {
-                    throw new DomainException("Phone already exists");
-                });
-
-        userRepository.findByEmail(email)
-                .ifPresent(existingUser -> {
-                    throw new DomainException("Email already exists");
-                });
-    }
-
-    private String generateSalt() {
-        byte[] salt = new byte[16];
-        new SecureRandom().nextBytes(salt);
-        return Base64.getEncoder().encodeToString(salt);
+    default Mono<AuthTokenDto> loginAsync(String username, String password) {
+        return Mono.fromCallable(() -> login(username, password))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }

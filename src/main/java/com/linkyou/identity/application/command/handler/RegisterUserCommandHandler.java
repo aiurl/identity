@@ -1,13 +1,13 @@
 package com.linkyou.identity.application.command.handler;
 
 import an.awesome.pipelinr.Command;
-import com.linkyou.identity.application.command.dto.RegisterUserCommand;
-import com.linkyou.identity.application.query.dto.UserView;
+import com.linkyou.identity.application.command.RegisterUserCommand;
+import com.linkyou.identity.application.query.dto.UserDto;
 import com.linkyou.identity.application.service.AuthApplicationService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RegisterUserCommandHandler implements Command.Handler<RegisterUserCommand, UserView> {
+public class RegisterUserCommandHandler implements Command.Handler<RegisterUserCommand, UserDto> {
 
     private final AuthApplicationService authApplicationService;
 
@@ -16,7 +16,13 @@ public class RegisterUserCommandHandler implements Command.Handler<RegisterUserC
     }
 
     @Override
-    public UserView handle(RegisterUserCommand command) {
-        return authApplicationService.register(command);
+    public UserDto handle(RegisterUserCommand command) {
+        return authApplicationService.register(
+                command.username(),
+                command.nickname(),
+                command.phone(),
+                command.email(),
+                command.password()
+        );
     }
 }
