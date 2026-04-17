@@ -1,6 +1,16 @@
 spring:
   application:
     name: linkyou
+  security:
+    user:
+      name: demo
+      password: demo
+  web:
+    error:
+      include-exception: true
+      include-message: always
+      include-binding-errors: always
+      include-stacktrace: on-param
 
 server:
   port: 5080
