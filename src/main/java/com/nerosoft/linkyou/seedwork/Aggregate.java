@@ -17,19 +17,15 @@ public abstract class Aggregate<TKey> {
         this.id = Objects.requireNonNull(id, "Aggregate identity cannot be null");
     }
 
-    public final List<DomainEvent> getDomainEvents() {
-        return Collections.unmodifiableList(domainEvents);
-    }
-
     public final List<DomainEvent> getEvents() {
-        return getDomainEvents();
+        return Collections.unmodifiableList(domainEvents);
     }
 
     protected final void raiseEvent(DomainEvent event) {
         domainEvents.add(Objects.requireNonNull(event, "Domain event cannot be null"));
     }
 
-    public final void clearDomainEvents() {
+    public final void clearEvents() {
         domainEvents.clear();
     }
 
