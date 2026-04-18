@@ -1,4 +1,4 @@
-package com.nerosoft.linkyou.utils;
+package com.nerosoft.linkyou.utility;
 
 public class RandomUtility {
     private static final java.util.Random random = new java.util.Random();

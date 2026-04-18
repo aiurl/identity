@@ -1,4 +1,4 @@
-package com.nerosoft.linkyou.utils;
+package com.nerosoft.linkyou.utility;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 

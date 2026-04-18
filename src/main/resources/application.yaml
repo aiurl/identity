@@ -21,6 +21,9 @@ security:
     access-token-expiration: 900000
     refresh-token-expiration: 604800000
 
+repository:
+  type: memory
+
 springdoc:
   api-docs:
     path: /v3/api-docs
