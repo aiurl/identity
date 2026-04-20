@@ -9,7 +9,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 public class SnowflakeIdTests {
     @Test
     void generateId_returnsUniqueIds() {
-        SnowflakeId generator = new SnowflakeId(1, 1);
+        SnowflakeId generator = SnowflakeId.getInstance();
 
         long id1 = generator.nextId();
         long id2 = generator.nextId();

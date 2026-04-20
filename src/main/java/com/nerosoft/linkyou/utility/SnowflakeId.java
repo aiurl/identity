@@ -23,7 +23,7 @@ public class SnowflakeId {
     private long sequence = 0L;
     private long lastTimestamp = -1L;
 
-    public SnowflakeId(long workerId, long datacenterId) {
+    private SnowflakeId(long workerId, long datacenterId) {
         if (workerId > MAX_WORKER_ID || workerId < 0) {
             throw new IllegalArgumentException(String.format("Worker ID must be between 0 and %d", MAX_WORKER_ID));
         }
@@ -32,6 +32,14 @@ public class SnowflakeId {
         }
         this.workerId = workerId;
         this.datacenterId = datacenterId;
+    }
+
+    public static synchronized SnowflakeId getInstance(long workerId, long datacenterId) {
+        return new SnowflakeId(workerId, datacenterId);
+    }
+
+    public static synchronized SnowflakeId getInstance() {
+        return new SnowflakeId(0, 0);
     }
 
     public synchronized long nextId() {
