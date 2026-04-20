@@ -1,6 +1,16 @@
 spring:
   application:
     name: linkyou
+  security:
+    user:
+      name: demo
+      password: demo
+  web:
+    error:
+      include-exception: true
+      include-message: always
+      include-binding-errors: always
+      include-stacktrace: on-param
 
 server:
   port: 5080
@@ -10,6 +20,9 @@ security:
     secret: linkyou-super-secret-jwt-signing-key-2026
     access-token-expiration: 900000
     refresh-token-expiration: 604800000
+
+repository:
+  type: memory
 
 springdoc:
   api-docs:
