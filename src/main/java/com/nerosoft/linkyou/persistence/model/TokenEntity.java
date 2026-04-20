@@ -3,6 +3,8 @@ package com.nerosoft.linkyou.persistence.model;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.hibernate.annotations.JdbcTypeCode;
+
 import com.nerosoft.linkyou.seedwork.Persistable;
 
 import jakarta.persistence.Column;
@@ -53,6 +55,7 @@ public class TokenEntity implements Persistable<Long> {
      * 过期时间，使用UTC时间，格式为ISO 8601，例如 "2024-12-31T23:59:59Z"
      */
     @Column(name = "expires", nullable = true)
+    @JdbcTypeCode(org.hibernate.type.SqlTypes.LOCAL_DATE_TIME)
     private Optional<LocalDateTime> expiresAt = Optional.empty();
 
     @Override
