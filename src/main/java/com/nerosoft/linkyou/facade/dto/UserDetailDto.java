@@ -1,4 +1,4 @@
-package com.nerosoft.linkyou.facade.dtos;
+package com.nerosoft.linkyou.facade.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

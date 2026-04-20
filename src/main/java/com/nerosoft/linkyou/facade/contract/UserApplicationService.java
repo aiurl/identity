@@ -2,8 +2,8 @@ package com.nerosoft.linkyou.facade.contract;
 
 import java.util.HashMap;
 
-import com.nerosoft.linkyou.facade.dtos.UserCreateDto;
-import com.nerosoft.linkyou.facade.dtos.UserDetailDto;
+import com.nerosoft.linkyou.facade.dto.UserCreateDto;
+import com.nerosoft.linkyou.facade.dto.UserDetailDto;
 import com.nerosoft.linkyou.seedwork.ApplicationService;
 
 import reactor.core.publisher.Mono;

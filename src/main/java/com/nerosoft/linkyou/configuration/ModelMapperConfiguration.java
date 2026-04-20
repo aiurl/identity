@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.nerosoft.linkyou.domain.aggregate.User;
-import com.nerosoft.linkyou.facade.dtos.UserDetailDto;
+import com.nerosoft.linkyou.facade.dto.UserDetailDto;
 
 @Configuration
 public class ModelMapperConfiguration {

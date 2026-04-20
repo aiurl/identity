@@ -1,6 +1,6 @@
 package com.nerosoft.linkyou.facade.contract;
 
-import com.nerosoft.linkyou.facade.dtos.*;
+import com.nerosoft.linkyou.facade.dto.*;
 
 import reactor.core.publisher.Mono;
 

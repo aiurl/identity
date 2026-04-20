@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.nerosoft.linkyou.facade.contract.AuthApplicationService;
-import com.nerosoft.linkyou.facade.dtos.TokenGrantRequestDto;
-import com.nerosoft.linkyou.facade.dtos.TokenGrantResponseDto;
+import com.nerosoft.linkyou.facade.dto.TokenGrantRequestDto;
+import com.nerosoft.linkyou.facade.dto.TokenGrantResponseDto;
 import com.nerosoft.linkyou.seedwork.JwtAuthenticationManager;
 
 @RestController
