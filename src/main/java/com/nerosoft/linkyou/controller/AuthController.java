@@ -1,20 +1,16 @@
 package com.nerosoft.linkyou.controller;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
+import com.nerosoft.linkyou.facade.contract.AuthApplicationService;
+import com.nerosoft.linkyou.facade.dto.TokenGrantRequestDto;
+import com.nerosoft.linkyou.facade.dto.TokenGrantResponseDto;
 import com.nerosoft.linkyou.seedwork.JwtAuthenticationManager;
 
 @RestController
@@ -22,60 +18,47 @@ import com.nerosoft.linkyou.seedwork.JwtAuthenticationManager;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
     private final JwtAuthenticationManager jwtAuthenticationManager;
+    private final AuthApplicationService _service;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          UserDetailsService userDetailsService,
-                          JwtAuthenticationManager jwtAuthenticationManager) {
+            AuthApplicationService service,
+            JwtAuthenticationManager jwtAuthenticationManager) {
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
+        _service = service;
         this.jwtAuthenticationManager = jwtAuthenticationManager;
     }
 
     @PostMapping("/token/grant")
-    public ResponseEntity<TokenResponse> grantToken(@RequestBody LoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-        } catch (BadCredentialsException ex) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
-        }
+    public ResponseEntity<TokenGrantResponseDto> grantToken(@RequestBody TokenGrantRequestDto request) {
+        return ResponseEntity.ok(_service.grantAsync(request).block());
+        // try {
+        // authenticationManager.authenticate(
+        // new UsernamePasswordAuthenticationToken(request.username(),
+        // request.password()));
+        // } catch (BadCredentialsException ex) {
+        // throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username
+        // or password");
+        // }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
-        return ResponseEntity.ok(buildTokenResponse(userDetails));
+        // UserDetails userDetails =
+        // userDetailsService.loadUserByUsername(request.username());
+        // return ResponseEntity.ok(buildTokenResponse(userDetails));
     }
 
     @PostMapping("/token/refresh")
-    public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
-        try {
-            String username = jwtAuthenticationManager.extractSubject(request.refreshToken());
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            if (!jwtAuthenticationManager.isTokenValid(request.refreshToken(), userDetails)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
-            }
-
-            return ResponseEntity.ok(buildTokenResponse(userDetails));
-        } catch (Exception ex) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
-        }
+    public ResponseEntity<TokenGrantResponseDto> refreshToken(@RequestParam String token) {
+        return ResponseEntity.ok(_service.grantAsync(new TokenGrantRequestDto(null, token, "refresh_token", null)).block());
     }
 
-    private TokenResponse buildTokenResponse(UserDetails userDetails) {
-        return new TokenResponse(
+    private TokenGrantResponseDto buildTokenResponse(UserDetails userDetails) {
+        return new TokenGrantResponseDto(
                 jwtAuthenticationManager.generateAccessToken(userDetails),
                 jwtAuthenticationManager.generateRefreshToken(userDetails),
+                "Bearer",
                 jwtAuthenticationManager.getAccessTokenExpiration(),
-                jwtAuthenticationManager.getRoles(userDetails));
-    }
-
-    public record LoginRequest(String username, String password) {
-    }
-
-    public record RefreshTokenRequest(String refreshToken) {
-    }
-
-    public record TokenResponse(String accessToken, String refreshToken, long expiresIn, List<String> roles) {
+                System.currentTimeMillis() / 1000,
+                userDetails.getUsername(),
+                userDetails.getUsername());
     }
 }
