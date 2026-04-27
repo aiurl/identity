@@ -77,15 +77,27 @@ public class AuthlogEntity implements Persistable<Long> {
     @Column(name = "app_version", nullable = true, length = 20)
     private String appVersion;
 
+    /**
+     * 操作系统平台，长度为16个字符，例如 "Windows"、"macOS"、"Linux"、"Android"、"iOS" 等
+     */
     @Column(name = "os_platform", nullable = true, length = 16)
     private String osPlatform;
 
+    /**
+     * 认证来源，长度为32个字符，例如 "web"、"mobile"、"api" 等
+     */
     @Column(name = "source", nullable = true, length = 32)
     private String source;
 
+    /**
+     * 认证结果，表示认证是否成功
+     */
     @Column(name = "success", nullable = false)
     private boolean success;
 
+    /**
+     * 备注信息
+     */
     @Column(name = "remark", nullable = true, length = 500)
     private String remark;
 
