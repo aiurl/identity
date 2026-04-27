@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.hibernate.annotations.JdbcTypeCode;
-
-import com.nerosoft.linkyou.seedwork.Persistable;
+import org.springframework.data.domain.Persistable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -63,8 +62,12 @@ public class TokenEntity implements Persistable<Long> {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return id == null || id <= 0;
     }
 }

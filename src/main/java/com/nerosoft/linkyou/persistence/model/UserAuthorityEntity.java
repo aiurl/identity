@@ -1,6 +1,6 @@
 package com.nerosoft.linkyou.persistence.model;
 
-import com.nerosoft.linkyou.seedwork.Persistable;
+import org.springframework.data.domain.Persistable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,4 +21,18 @@ public class UserAuthorityEntity implements Persistable<Long> {
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return id == null || id <= 0;
+    }
 }
