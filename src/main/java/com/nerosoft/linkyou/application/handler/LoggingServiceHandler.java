@@ -1,4 +1,4 @@
-package com.nerosoft.linkyou.facade.handler;
+package com.nerosoft.linkyou.application.handler;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

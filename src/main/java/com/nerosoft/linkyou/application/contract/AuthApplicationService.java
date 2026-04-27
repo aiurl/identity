@@ -1,6 +1,7 @@
-package com.nerosoft.linkyou.facade.contract;
+package com.nerosoft.linkyou.application.contract;
 
-import com.nerosoft.linkyou.facade.dto.*;
+import com.nerosoft.linkyou.application.dto.TokenGrantRequestDto;
+import com.nerosoft.linkyou.application.dto.TokenGrantResponseDto;
 
 import reactor.core.publisher.Mono;
 

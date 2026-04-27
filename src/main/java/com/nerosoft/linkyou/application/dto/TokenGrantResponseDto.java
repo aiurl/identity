@@ -1,4 +1,4 @@
-package com.nerosoft.linkyou.facade.dto;
+package com.nerosoft.linkyou.application.dto;
 
 /** 
  * 令牌颁发响应 DTO

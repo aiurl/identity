@@ -1,4 +1,4 @@
-package com.nerosoft.linkyou.facade.dto;
+package com.nerosoft.linkyou.application.dto;
 
 /**
  * 用户创建 DTO
