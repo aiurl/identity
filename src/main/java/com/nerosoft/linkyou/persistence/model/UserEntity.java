@@ -2,7 +2,7 @@ package com.nerosoft.linkyou.persistence.model;
 
 import java.time.LocalDateTime;
 
-import com.nerosoft.linkyou.seedwork.Persistable;
+import org.springframework.data.domain.Persistable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,10 +58,14 @@ public class UserEntity implements Persistable<String> {
     public String getId() {
         return id;
     }
-
-    @Override
+    
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return id == null || id.isEmpty();
     }
 }
 
