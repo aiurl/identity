@@ -1,5 +1,7 @@
 package com.nerosoft.linkyou.seedwork;
 
+import an.awesome.pipelinr.Command;
+
 /**
  * 基础命令类
  * 
@@ -8,7 +10,7 @@ package com.nerosoft.linkyou.seedwork;
  * @author nerosoft
  * @version 1.0
  */
-public abstract class BaseCommand {
+public abstract class BaseCommand implements Command<Void> {
     private final String commandId = java.util.UUID.randomUUID().toString();
     private final java.time.Instant issuedAt = java.time.Instant.now();
 
