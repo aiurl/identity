@@ -17,10 +17,6 @@ import jakarta.persistence.NoResultException;
 @Repository
 @ConditionalOnExpression("'${repository.type}'.equals('jpa')") // 当 repository.type 配置为 jpa 时启用
 public class JpaUserRepository implements UserRepository {
-
-    // @Autowired
-    // EntityManager entityManager;
-
     @Autowired
     private ModelMapper mapper;
 
