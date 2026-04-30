@@ -4,14 +4,11 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Persistable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 /**
- * AuthlogEntity类表示一个认证日志的实体，包含认证日志的基本信息和相关属性
+ * 认证日志数据实体，包含认证日志的基本信息和相关属性
  */
 @Entity
 @Data
@@ -106,15 +103,6 @@ public class AuthlogEntity implements Persistable<Long> {
      */
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     @Override
     public boolean isNew() {

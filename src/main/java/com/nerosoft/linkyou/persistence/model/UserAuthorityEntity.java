@@ -2,14 +2,14 @@ package com.nerosoft.linkyou.persistence.model;
 
 import org.springframework.data.domain.Persistable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
- * UserAuthorityEntity类表示用户权限的实体，包含用户与权限之间的关系
+ * 用户关联的第三方授权信息实体类，表示用户与第三方授权平台之间的关联关系
+ * 包含用户ID、授权平台名称、第三方账号ID等信息，用于实现用户通过第三方平台进行授权登录的功能
  */
 @Data
 @Entity
@@ -22,14 +22,35 @@ public class UserAuthorityEntity implements Persistable<Long> {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Override
-    public Long getId() {
-        return id;
-    }
+    /**
+     * 关联的用户ID
+     */
+    @Column(name = "user_id", nullable = false, length = 32)
+    private String userId;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    /**
+     * 第三方授权平台的名称，例如Google、Facebook、GitHub等，用于标识用户是通过哪个第三方平台进行授权登录的
+     */
+    @Column(name = "provider", nullable = false, length = 64)
+    private String provider;
+
+    /**
+     * 第三方授权账号ID，通常是第三方平台提供的唯一标识符，用于关联用户与其在第三方平台上的账户信息
+     */
+    @Column(name = "open_id", nullable = false, length = 128)
+    private String openId;
+
+    /**
+     * 第三方授权账号名称
+     */
+    @Column(name = "name")
+    private String name;
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     @Override
     public boolean isNew() {
