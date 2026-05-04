@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.nerosoft.linkyou.application.dto.UserCreateDto;
 import com.nerosoft.linkyou.application.dto.UserDetailDto;
+import com.nerosoft.linkyou.application.dto.UserProfileDto;
 import com.nerosoft.linkyou.seedwork.ApplicationService;
 
 import reactor.core.publisher.Mono;
@@ -34,4 +35,27 @@ public interface UserApplicationService extends ApplicationService {
      * @return 用户详细信息
      */
     Mono<UserDetailDto> getAsync(String id);
+
+    /**
+     * 获取当前用户的个人信息
+     * @return 当前用户的个人信息
+     */
+    Mono<UserProfileDto> getProfileAsync();
+
+    /**
+     * 修改当前用户的密码
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return void
+     */
+    Mono<Void> changePasswordAsync(String oldPassword, String newPassword);
+
+    /**
+     * 重置用户密码
+     * @param username 用户名
+     * @param password 密码
+     * @param verifyCode 验证码
+     * @return void
+     */
+    Mono<Void> resetPasswordAsync(String username, String password, String verifyCode);
 }

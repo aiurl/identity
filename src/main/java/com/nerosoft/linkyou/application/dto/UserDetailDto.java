@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import lombok.Data;
 
+/**
+ * 用户详细信息 DTO
+ */
 @Data
 public class UserDetailDto {
     private String id;

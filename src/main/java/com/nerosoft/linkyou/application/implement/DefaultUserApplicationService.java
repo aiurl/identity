@@ -1,74 +1,107 @@
 package com.nerosoft.linkyou.application.implement;
 
 import java.util.HashMap;
-import java.util.List;
 
+import com.nerosoft.linkyou.application.command.UserPasswordChangeCommand;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.nerosoft.linkyou.application.command.UserCreateCommand;
+import com.nerosoft.linkyou.application.command.UserUpdateCommand;
 import com.nerosoft.linkyou.application.contract.UserApplicationService;
 import com.nerosoft.linkyou.application.dto.UserCreateDto;
 import com.nerosoft.linkyou.application.dto.UserDetailDto;
-import com.nerosoft.linkyou.domain.aggregate.User;
+import com.nerosoft.linkyou.application.dto.UserProfileDto;
+import com.nerosoft.linkyou.application.query.UserDetailQuery;
 import com.nerosoft.linkyou.domain.repository.UserRepository;
-import com.nerosoft.linkyou.domain.service.UserRegistrationService;
 import com.nerosoft.linkyou.seedwork.BaseApplicationService;
 
 import reactor.core.publisher.Mono;
 
 @Service
 public class DefaultUserApplicationService extends BaseApplicationService implements UserApplicationService {
-    private final UserRepository userRepository;
-    private final UserRegistrationService userRegistrationService;
     private final ModelMapper modelMapper;
 
     public DefaultUserApplicationService(UserRepository userRepository, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.userRegistrationService = new UserRegistrationService(userRepository);
         this.modelMapper = modelMapper;
     }
 
     @Override
     public Mono<String> createAsync(UserCreateDto data) {
-        return Mono.fromCallable(() -> userRegistrationService.register(
-                data.username(),
-                data.password(),
-                data.email(),
-                data.phone(),
-                data.nickname()).getId());
+
+        var command = new UserCreateCommand(data);
+
+        pipeline.send(command);
+
+        // Mono.fromCallable(() -> pipeline.send(command));
+        return Mono.fromCallable(() -> pipeline.send(command)).map(result -> result);
     }
 
     @Override
     public Mono<Void> updateAsync(String id, HashMap<String, Object> data) {
-        return Mono.fromRunnable(() -> {
-            User user = requireUser(id);
-            if (data.containsKey("email")) {
-                user.changeEmail((String) data.get("email"));
-            }
-            if (data.containsKey("phone")) {
-                user.changePhone((String) data.get("phone"));
-            }
-            userRepository.save(user);
-        });
+
+        var command = new UserUpdateCommand(id, data);
+
+        return Mono.fromCallable(() -> pipeline.send(command));
     }
 
     @Override
     public Mono<UserDetailDto> getAsync(String id) {
-        return Mono.fromSupplier(() -> toDetailDto(requireUser(id)));
+
+        var query = new UserDetailQuery(id, null);
+
+        return Mono.fromCallable(() -> pipeline.send(query)).map(result -> {
+            return modelMapper.map(result, UserDetailDto.class);
+        });
     }
 
-    private User requireUser(String id) {
-        User user = userRepository.findById(id);
-        if (user == null) {
-            throw new IllegalArgumentException("User not found: " + id);
+    @Override
+    public Mono<UserProfileDto> getProfileAsync() {
+        var userId = getCurrentUserId();
+        var query = new UserDetailQuery(userId, null);
+
+        return Mono.fromCallable(() -> pipeline.send(query)).map(result -> {
+            return modelMapper.map(result, UserProfileDto.class);
+        });
+    }
+
+    @Override
+    public Mono<Void> changePasswordAsync(String oldPassword, String newPassword) {
+        if(oldPassword == null || oldPassword.isEmpty()) {
+            throw new IllegalArgumentException("Old password cannot be null or empty");
         }
-        return user;
+        if(newPassword == null || newPassword.isEmpty()) {
+            throw new IllegalArgumentException("New password cannot be null or empty");
+        }
+
+        var id = getCurrentUserId();
+
+        var command = new UserPasswordChangeCommand(id, oldPassword, newPassword);
+
+        return Mono.fromCallable(() -> pipeline.send(command));
     }
 
-    private UserDetailDto toDetailDto(User user) {
-        UserDetailDto dto = modelMapper.map(user, UserDetailDto.class);
-        dto.setRoles(List.of());
-        dto.setAuthorities(List.of());
-        return dto;
+    @Override
+    public Mono<Void> resetPasswordAsync(String username, String password, String verifyCode) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty");
+        }
+        if (verifyCode == null || verifyCode.isEmpty()) {
+            throw new IllegalArgumentException("Verify code cannot be null or empty");
+        } else {
+            // TODO: 校验验证码
+        }
+
+        return Mono.fromCallable(() -> {
+            var query = new UserDetailQuery(null, username);
+            var user = pipeline.send(query);
+            var command = new UserPasswordChangeCommand(user.getResult().getId(), password, "change");
+            pipeline.send(command);
+            return null;
+        });
     }
+
 }
