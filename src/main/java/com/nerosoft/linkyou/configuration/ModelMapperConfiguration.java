@@ -8,9 +8,12 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.nerosoft.linkyou.application.dto.UserDetailDto;
 import com.nerosoft.linkyou.domain.aggregate.User;
-import com.nerosoft.linkyou.facade.dto.UserDetailDto;
 
+/**
+ * ModelMapper配置类，定义了ModelMapper的Bean，并配置了User到UserDetailDto的映射规则。
+ */
 @Configuration
 public class ModelMapperConfiguration {
 

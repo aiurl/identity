@@ -1,14 +1,15 @@
 package com.nerosoft.linkyou.seedwork;
 
+import an.awesome.pipelinr.Command;
+
 /**
  * 基础查询类
- * 
  * 所有查询对象都应该继承自这个基类，以便于统一管理和处理。
  * 
  * @author nerosoft
  * @version 1.0
  */
-public abstract class BaseQuery {
+public abstract class BaseQuery<R> implements Command<CommandResult<R>> {
     private final String queryId = java.util.UUID.randomUUID().toString();
     private final java.time.Instant issuedAt = java.time.Instant.now();
 

@@ -1,4 +1,4 @@
-package com.nerosoft.linkyou.facade.dto;
+package com.nerosoft.linkyou.application.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import lombok.Data;
 
+/**
+ * 用户详细信息 DTO
+ */
 @Data
 public class UserDetailDto {
     private String id;

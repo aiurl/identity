@@ -54,17 +54,7 @@ public class TokenEntity implements Persistable<Long> {
      * 过期时间，使用UTC时间，格式为ISO 8601，例如 "2024-12-31T23:59:59Z"
      */
     @Column(name = "expires", nullable = true)
-    @JdbcTypeCode(org.hibernate.type.SqlTypes.LOCAL_DATE_TIME)
-    private Optional<LocalDateTime> expiresAt = Optional.empty();
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private LocalDateTime expiresAt;
 
     @Override
     public boolean isNew() {
