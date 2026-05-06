@@ -4,17 +4,23 @@ import com.nerosoft.linkyou.seedwork.BaseCommand;
 import lombok.Getter;
 
 /**
- * 用户密码修改命令
+ * Command to change user password.
  */
 @Getter
 public class UserPasswordChangeCommand extends BaseCommand<Void> {
     private final String id;
-    private final String oldPassword;
-    private final String newPassword;
+    private final String password;
+    private final String action;
 
-    public UserPasswordChangeCommand(String id, String oldPassword, String newPassword) {
+    /**
+     * Initialize a new instance of UserPasswordChangeCommand.
+     * @param id The ID of the user.
+     * @param password The new password to be set for the user.
+     * @param action The action to be performed, e.g., "change" or "reset".
+     */
+    public UserPasswordChangeCommand(String id, String password, String action) {
         this.id = id;
-        this.oldPassword = oldPassword;
-        this.newPassword = newPassword;
+        this.password = password;
+        this.action = action;
     }
 }
