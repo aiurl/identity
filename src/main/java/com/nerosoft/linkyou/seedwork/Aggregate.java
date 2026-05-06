@@ -1,17 +1,17 @@
 package com.nerosoft.linkyou.seedwork;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public abstract class Aggregate<TKey> {
+    @Getter
     private TKey id;
+    
     private final List<DomainEvent> domainEvents = new ArrayList<>();
-
-    public TKey getId() {
-        return id;
-    }
 
     protected final void setId(TKey id) {
         this.id = Objects.requireNonNull(id, "Aggregate identity cannot be null");

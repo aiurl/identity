@@ -2,23 +2,25 @@ package com.nerosoft.linkyou.application.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import lombok.Data;
 
 /**
- * 用户详细信息 DTO
+ * Data transfer object for user details.
  */
 @Data
 public class UserDetailDto {
+    /**
+     * The identifier of user.
+     */
     private String id;
     private String username;
-    private Optional<String> email = Optional.empty();
-    private Optional<String> phone = Optional.empty();
-    private Optional<String> nickname = Optional.empty();
-    private Optional<String> avatarUrl = Optional.empty();
+    private String email;
+    private String phone;
+    private String nickname;
+    private String avatarUrl;
     private LocalDateTime createdAt;
-    private Optional<LocalDateTime> lockoutEnd = Optional.empty();
+    private LocalDateTime lockoutEnd = null;
     private List<String> roles = List.of();
     private List<String> authorities = List.of();
 }

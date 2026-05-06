@@ -85,16 +85,23 @@ public class User extends Aggregate<String> {
         this.username = requireText(username, "username");
     }
 
-    public void changeEmail(String email) {
+    public void setEmail(String email) {
         this.email = email == null || email.isBlank() ? null : EmailAddress.of(email);
     }
 
-    public void changePhone(String phone) {
+    public void setPhone(String phone) {
         this.phone = phone == null || phone.isBlank() ? null : PhoneNumber.of(phone);
     }
 
-    public void updateProfile(String nickname, String avatarUrl) {
+    public void setNickname(String nickname) {
         this.nickname = normalizeOptionalText(nickname);
+    }
+
+    /**
+     * Set avatar url for current user.
+     * @param avatarUrl The avatar url.
+     */
+    public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = normalizeOptionalText(avatarUrl);
     }
 

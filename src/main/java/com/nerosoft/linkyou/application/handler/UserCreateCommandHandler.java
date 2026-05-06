@@ -9,7 +9,8 @@ import com.nerosoft.linkyou.domain.repository.UserRepository;
 import an.awesome.pipelinr.Command;
 
 /**
- * 用户创建命令处理器
+ * Handler to process UserCreateCommand, responsible for creating a new user in the system.
+ * It checks for existing users with the same username, email, or phone number to ensure uniqueness before saving the new user to the repository.
  */
 @Component
 public class UserCreateCommandHandler implements Command.Handler<UserCreateCommand, String> {
@@ -25,23 +26,30 @@ public class UserCreateCommandHandler implements Command.Handler<UserCreateComma
         try {
             var dto = command.getData();
 
-            var exists = userRepository.findByAnyOf(dto.username(), dto.email(), dto.phone(), null);
+            var exists = userRepository.findByAnyOf(dto.getUsername(), dto.getEmail(), dto.getPhone(), null);
 
             if (exists != null) {
-                if (exists.getUsername().equals(dto.username())) {
+                if (exists.getUsername().equals(dto.getUsername())) {
                     throw new IllegalStateException("用户名已存在");
                 }
-                if (exists.getEmail() != null && exists.getEmail().equals(dto.email())) {
+                if (exists.getEmail() != null && exists.getEmail().equals(dto.getEmail())) {
                     throw new IllegalStateException("邮箱已被使用");
                 }
-                if (exists.getPhone() != null && exists.getPhone().equals(dto.phone())) {
+                if (exists.getPhone() != null && exists.getPhone().equals(dto.getPhone())) {
                     throw new IllegalStateException("手机号已被使用");
                 }
             }
 
-            var user = User.create(command.getData().username());
+            var user = User.create(command.getData().getUsername());
 
-            user.setPassword(dto.password(), "init");
+            user.setPassword(dto.getPassword(), "init");
+
+            if(command.getData().getEmail() != null) {
+                user.setEmail(dto.getEmail());
+            }
+            if(command.getData().getPhone() != null) {
+                user.setPhone(dto.getPhone());
+            }
 
             userRepository.save(user);
             return user.getId();
